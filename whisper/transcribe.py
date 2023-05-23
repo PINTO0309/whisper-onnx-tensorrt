@@ -36,7 +36,7 @@ def transcribe(
     model: Whisper
         The Whisper model instance
 
-    audio: Union[str, np.ndarray, torch.Tensor]
+    audio: Union[str, np.ndarray]
         The path to the audio file to open, or the audio waveform
 
     verbose: bool
