@@ -5,9 +5,8 @@ from typing import Union
 import ffmpeg
 import numpy as np
 import torch
-import torch.nn.functional as F
 
-from .utils import exact_div
+from whisper.utils import exact_div
 
 # hard-coded audio hyperparameters
 SAMPLE_RATE = 16000
@@ -49,26 +48,17 @@ def load_audio(file: str, sr: int = SAMPLE_RATE):
     return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
 
 
-def pad_or_trim(array, length: int = N_SAMPLES, *, axis: int = -1):
+def pad_or_trim(array: np.ndarray, length: int = N_SAMPLES, *, axis: int = -1):
     """
     Pad or trim the audio array to N_SAMPLES, as expected by the encoder.
     """
-    if torch.is_tensor(array):
-        if array.shape[axis] > length:
-            array = array.index_select(dim=axis, index=torch.arange(length))
+    if array.shape[axis] > length:
+        array = array.take(indices=range(length), axis=axis)
 
-        if array.shape[axis] < length:
-            pad_widths = [(0, 0)] * array.ndim
-            pad_widths[axis] = (0, length - array.shape[axis])
-            array = F.pad(array, [pad for sizes in pad_widths[::-1] for pad in sizes])
-    else:
-        if array.shape[axis] > length:
-            array = array.take(indices=range(length), axis=axis)
-
-        if array.shape[axis] < length:
-            pad_widths = [(0, 0)] * array.ndim
-            pad_widths[axis] = (0, length - array.shape[axis])
-            array = np.pad(array, pad_widths)
+    if array.shape[axis] < length:
+        pad_widths = [(0, 0)] * array.ndim
+        pad_widths[axis] = (0, length - array.shape[axis])
+        array = np.pad(array, pad_widths)
 
     return array
 
