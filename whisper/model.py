@@ -149,7 +149,7 @@ class OnnxTextDecoder():
         kv_cache: np.ndarray,
         offset: int,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        logits, output_kv_cache, cross_attention_qks = \
+        outputs = \
             self.sess.run(
                 output_names=[
                     "logits",
@@ -163,23 +163,9 @@ class OnnxTextDecoder():
                     "offset": np.array([offset], dtype=np.int64),
                 }
             )
-        """
-        logits.astype(np.float32)
-        array([[[-0.60253906, -0.8417969 ,  4.4101562 , ...,  2.0820312 ,
-                3.1074219 ,  3.8847656 ]]], dtype=float32)
-
-        output_kv_cache.astype(np.float32)
-        array([[[[-6.21093750e-01,  2.95410156e-01,  1.15429688e+00, ...,
-                -9.60693359e-02, -2.17285156e-02,  1.78710938e-01]]],
-
-        logits.astype(np.float32)
-        array([[[-0.60253906, -0.84033203,  4.4140625 , ...,  2.0820312 ,
-                3.1074219 ,  3.8867188 ],
-
-        output_kv_cache.astype(np.float32)
-        array([[[[-6.21093750e-01,  2.95410156e-01,  1.15429688e+00, ...,
-                -9.60693359e-02, -2.17285156e-02,  1.78710938e-01],
-        """
+        logits: np.ndarray = outputs[0]
+        output_kv_cache: np.ndarray = outputs[1]
+        cross_attention_qks: np.ndarray = outputs[2]
         return logits.astype(np.float32), output_kv_cache.astype(np.float32)
 
 
