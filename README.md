@@ -179,6 +179,7 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
         (default: 0.6)
     ``` 
 ## 6. Languages
+https://github.com/PINTO0309/whisper-onnx-tensorrt/blob/main/whisper/tokenizer.py
 ```
 LANGUAGES = {
     "en": "english",
