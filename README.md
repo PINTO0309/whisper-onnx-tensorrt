@@ -38,6 +38,19 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
 ```
 
 ## 5. Transcribe
+- `--model` option
+    ```
+    tiny.en
+    tiny
+    base.en
+    base
+    small.en
+    small
+    medium.en
+    medium
+    large-v1
+    large-v2
+    ```
 - command
     ```bash
     python whisper/transcribe.py xxxx.mp4 --model small --beam_size 3
