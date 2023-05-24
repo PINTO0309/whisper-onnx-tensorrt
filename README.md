@@ -3,7 +3,7 @@ ONNX and TensorRT implementation of Whisper.
 
 This repository has been reimplemented with ONNX and TensorRT using [zhuzilin/whisper-openvino](https://github.com/zhuzilin/whisper-openvino) as a reference.
 
-Enables execution only with onnxruntime with CUDA and TensorRT Excecution Provider enabled, no need to install PyTorch or TensorFlow.
+Enables execution only with onnxruntime with CUDA and TensorRT Excecution Provider enabled, no need to install PyTorch or TensorFlow. All backend logic using PyTorch was rewritten to a Numpy/CuPy implementation from scratch.
 
 ## 1. Environment
 Although it can run directly on the host PC, we strongly recommend the use of Docker to avoid breaking the environment.
