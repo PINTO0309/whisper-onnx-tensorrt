@@ -6,7 +6,7 @@ This repository has been reimplemented with ONNX and TensorRT using [zhuzilin/wh
 Enables execution only with onnxruntime with CUDA and TensorRT Excecution Provider enabled, no need to install PyTorch or TensorFlow. All backend logic using PyTorch was rewritten to a Numpy/CuPy implementation from scratch.
 
 ## 1. Environment
-Although it can run directly on the host PC, we strongly recommend the use of Docker to avoid breaking the environment.
+Although it can run directly on the host PC, I strongly recommend the use of Docker to avoid breaking the environment.
 
 1. Docker
 2. NVIDIA GPU (VRAM 16 GB or more recommended)
