@@ -66,7 +66,7 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
     ```
 - command
 
-    The onnx file is automatically downloaded when the sample is run.
+    The onnx file is automatically downloaded when the sample is run. Note that `Decoder` is run in CUDA, not TensorRT, because the shape of all input tensors must be undefined.
     ```bash
     python whisper/transcribe.py xxxx.mp4 --model small --beam_size 3
     ```
