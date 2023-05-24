@@ -21,7 +21,7 @@ docker build -t whisper-onnx -f Dockerfile.tensorrt .
 ```
 ## 4. docker run
 ```bash
-docker run --rm -it --gpus all -v $PWD:/workdir whisper-onnx
+docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
 ```
 
 ## 5. Transcribe
