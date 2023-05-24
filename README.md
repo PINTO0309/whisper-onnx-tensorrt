@@ -10,16 +10,26 @@ This repository has been reimplemented with ONNX and TensorRT using [zhuzilin/wh
 ## 2. Converted Models
 https://github.com/PINTO0309/PINTO_model_zoo/tree/main/381_Whisper
 
-## 3. Docker build
+## 3. Docker run
 ### 3-1. CUDA ver
 ```bash
-docker build -t whisper-onnx -f Dockerfile.gpu .
+docker run --rm -it --gpus all -v `pwd`:/workdir pinto0309/whisper-onnx-cuda
 ```
 ### 3-2. TensorRT ver
 ```bash
+docker run --rm -it --gpus all -v `pwd`:/workdir pinto0309/whisper-onnx-tensorrt
+```
+
+## 4. Docker build
+### 4-1. CUDA ver
+```bash
+docker build -t whisper-onnx -f Dockerfile.gpu .
+```
+### 4-2. TensorRT ver
+```bash
 docker build -t whisper-onnx -f Dockerfile.tensorrt .
 ```
-## 4. docker run
+## 4-3. docker run
 ```bash
 docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
 ```

@@ -2,3 +2,4 @@
 *.mp4
 *.npy
 __pycache__
+packages
