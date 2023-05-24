@@ -26,8 +26,6 @@ RUN apt-get update \
         build-essential \
         ca-certificates \
         pciutils \
-    && apt-get install -y \
-        software-properties-common \
     && apt-get install -y  --no-install-recommends \
         software-properties-common \
         python3-all-dev \
