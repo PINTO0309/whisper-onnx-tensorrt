@@ -149,8 +149,8 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
         (default: None)
       --condition_on_previous_text CONDITION_ON_PREVIOUS_TEXT
         if True, provide the previous output of the model as a prompt for the next window;
-        disabling may make the text inconsistent across windows, but the model becomes less prone
-        to getting stuck in a failure loop
+        disabling may make the text inconsistent across windows, but the model becomes
+        less prone to getting stuck in a failure loop
         (default: True)
       --temperature_increment_on_fallback TEMPERATURE_INCREMENT_ON_FALLBACK
         temperature to increase when falling back when the decoding fails to meet either of
