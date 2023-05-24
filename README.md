@@ -66,7 +66,7 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
     ```
 - command
 
-    The onnx file is automatically downloaded when the sample is run. Note that `Decoder` is run in CUDA, not TensorRT, because the shape of all input tensors must be undefined.
+    The onnx file is automatically downloaded when the sample is run. Note that `Decoder` is run in CUDA, not TensorRT, because the shape of all input tensors must be undefined. When running the TensorRT version, there is a 5 to 10 minute wait for the compilation process from ONNX to the TensorRT Engine during the first inference.
     ```bash
     python whisper/transcribe.py xxxx.mp4 --model small --beam_size 3
     ```
