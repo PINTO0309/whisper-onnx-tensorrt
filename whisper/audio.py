@@ -4,7 +4,7 @@ from typing import Union
 
 import ffmpeg
 import numpy as np
-import torch
+import cupy as cp
 
 from whisper.utils import exact_div
 
@@ -64,7 +64,7 @@ def pad_or_trim(array: np.ndarray, length: int = N_SAMPLES, *, axis: int = -1):
 
 
 @lru_cache(maxsize=None)
-def mel_filters(n_mels: int = N_MELS) -> torch.Tensor:
+def mel_filters(n_mels: int = N_MELS) -> np.ndarray:
     """
     load the mel filterbank matrix for projecting STFT into a Mel spectrogram.
     Allows decoupling librosa dependency; saved using:
@@ -76,7 +76,28 @@ def mel_filters(n_mels: int = N_MELS) -> torch.Tensor:
     """
     assert n_mels == 80, f"Unsupported n_mels: {n_mels}"
     with np.load(os.path.join(os.path.dirname(__file__), "assets", "mel_filters.npz")) as f:
-        return torch.from_numpy(f[f"mel_{n_mels}"])
+        return f[f"mel_{n_mels}"]
+
+def sliding_window_view(x, window_shape, step=1):
+    shape = ((x.shape[-1] - window_shape) // step + 1,) + (window_shape,)
+    strides = (step * x.strides[-1],) + x.strides
+    return cp.lib.stride_tricks.as_strided(x, shape=shape, strides=strides)
+
+
+def cupy_stft(audio: np.ndarray, N_FFT: int, HOP_LENGTH: int):
+    window = cp.hanning(N_FFT)
+    cpaudio = cp.asarray(audio)
+    num_frames = 1 + (cpaudio.size - N_FFT) // HOP_LENGTH
+    if (cpaudio.size - N_FFT) % HOP_LENGTH > 0:
+        num_frames += 1
+    audio_padded = cp.pad(cpaudio, pad_width=(N_FFT//2, N_FFT//2), mode='constant')
+    frames = sliding_window_view(audio_padded, N_FFT, HOP_LENGTH)
+    frames = frames[:num_frames]
+    stft = cp.fft.rfft(frames * window, axis=-1)
+
+    cpstft = (cp.abs(stft[:,:N_FFT//2 + 1]) ** 2).T
+    magnitudes = cp.asnumpy(cpstft).astype(audio.dtype)
+    return magnitudes
 
 
 def log_mel_spectrogram(audio: Union[str, np.ndarray], n_mels: int = N_MELS):
@@ -93,22 +114,18 @@ def log_mel_spectrogram(audio: Union[str, np.ndarray], n_mels: int = N_MELS):
 
     Returns
     -------
-    torch.Tensor, shape = (80, n_frames)
+    np.ndarray, shape = (80, n_frames)
         A Tensor that contains the Mel spectrogram
     """
-    if not torch.is_tensor(audio):
-        if isinstance(audio, str):
-            audio = load_audio(audio)
-        audio = torch.from_numpy(audio)
+    if isinstance(audio, str):
+        audio = load_audio(audio)
 
-    window = torch.hann_window(N_FFT)
-    stft = torch.stft(audio, N_FFT, HOP_LENGTH, window=window, return_complex=True)
-    magnitudes = stft[:, :-1].abs() ** 2
+    magnitudes = cupy_stft(audio, N_FFT, HOP_LENGTH)
 
     filters = mel_filters(n_mels)
     mel_spec = filters @ magnitudes
 
-    log_spec = torch.clamp(mel_spec, min=1e-10).log10()
-    log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)
+    log_spec = np.log10(np.clip(mel_spec, a_min=1e-10, a_max=None))
+    log_spec = np.maximum(log_spec, np.max(log_spec) - 8.0)
     log_spec = (log_spec + 4.0) / 4.0
-    return log_spec.numpy()
+    return log_spec
