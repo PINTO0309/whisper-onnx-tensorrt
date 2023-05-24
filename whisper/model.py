@@ -107,7 +107,16 @@ class OnnxAudioEncoder():
         self.sess = \
             ort.InferenceSession(
                 path_or_bytes=model_download(name=f'{model}_encoder'),
-                providers=['CUDAExecutionProvider'],
+                providers=[
+                    (
+                        'TensorrtExecutionProvider', {
+                            'trt_engine_cache_enable': True,
+                            'trt_engine_cache_path': '.',
+                            'trt_fp16_enable': True,
+                        }
+                    ),
+                    'CUDAExecutionProvider'
+                ],
             )
 
     def __call__(
@@ -136,7 +145,9 @@ class OnnxTextDecoder():
         self.sess = \
             ort.InferenceSession(
                 path_or_bytes=model_download(name=f'{model}_decoder'),
-                providers=['CUDAExecutionProvider'],
+                providers=[
+                    'CUDAExecutionProvider'
+                ],
             )
 
     def __call__(
