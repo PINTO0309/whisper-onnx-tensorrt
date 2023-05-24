@@ -76,3 +76,94 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
     [00:43.440 --> 00:48.000] ですね チュートリアルを謎って いくという形になります
     [00:48.000 --> 00:52.640] まず本日対象にするモデルの内容 なんですけれども Google Research
     ```
+- parameters
+```
+usage: transcribe.py
+    [-h]
+    [--model {tiny.en,tiny,base.en,base,small.en,small,medium.en,medium,large-v1,large-v2}]
+    [--output_dir OUTPUT_DIR]
+    [--verbose VERBOSE]
+    [--task {transcribe,translate}]
+    [--language {af, am, ...}]
+    [--temperature TEMPERATURE]
+    [--best_of BEST_OF]
+    [--beam_size BEAM_SIZE]
+    [--patience PATIENCE]
+    [--length_penalty LENGTH_PENALTY]
+    [--suppress_tokens SUPPRESS_TOKENS]
+    [--initial_prompt INITIAL_PROMPT]
+    [--condition_on_previous_text CONDITION_ON_PREVIOUS_TEXT]
+    [--temperature_increment_on_fallback TEMPERATURE_INCREMENT_ON_FALLBACK]
+    [--compression_ratio_threshold COMPRESSION_RATIO_THRESHOLD]
+    [--logprob_threshold LOGPROB_THRESHOLD]
+    [--no_speech_threshold NO_SPEECH_THRESHOLD]
+    audio [audio ...]
+
+positional arguments:
+  audio
+    audio file(s) to transcribe
+
+optional arguments:
+  -h, --help
+    show this help message and exit
+  --model {tiny.en,tiny,base.en,base,small.en,small,medium.en,medium,large-v1,large-v2}
+    name of the Whisper model to use
+    (default: small)
+  --output_dir OUTPUT_DIR, -o OUTPUT_DIR
+    directory to save the outputs
+    (default: .)
+  --verbose VERBOSE
+    whether to print out the progress and debug messages
+    (default: True)
+  --task {transcribe,translate}
+    whether to perform X->X speech recognition ('transcribe') or
+    X->English translation ('translate')
+    (default: transcribe)
+  --language {af, am, ...}
+    language spoken in the audio, specify None to perform language detection
+    (default: None)
+  --temperature TEMPERATURE
+    temperature to use for sampling
+    (default: 0)
+  --best_of BEST_OF
+    number of candidates when sampling with non-zero temperature
+    (default: 5)
+  --beam_size BEAM_SIZE
+    number of beams in beam search, only applicable when temperature is zero
+    (default: 5)
+  --patience PATIENCE
+    optional patience value to use in beam decoding,
+    as in https://arxiv.org/abs/2204.05424,
+    the default (1.0) is equivalent to conventional beam search
+    (default: None)
+  --length_penalty LENGTH_PENALTY
+    optional token length penalty coefficient (alpha) as in
+    https://arxiv.org/abs/1609.08144, uses simple lengt normalization by default
+    (default: None)
+  --suppress_tokens SUPPRESS_TOKENS
+    comma-separated list of token ids to suppress during sampling;
+    '-1' will suppress most special characters except common punctuations
+    (default: -1)
+  --initial_prompt INITIAL_PROMPT
+    optional text to provide as a prompt for the first window.
+    (default: None)
+  --condition_on_previous_text CONDITION_ON_PREVIOUS_TEXT
+    if True, provide the previous output of the model as a prompt for the next window;
+    disabling may make the text inconsistent across windows, but the model becomes less prone
+    to getting stuck in a failure loop
+    (default: True)
+  --temperature_increment_on_fallback TEMPERATURE_INCREMENT_ON_FALLBACK
+    temperature to increase when falling back when the decoding fails to meet either of
+    the thresholds below
+    (default: 0.2)
+  --compression_ratio_threshold COMPRESSION_RATIO_THRESHOLD
+    if the gzip compression ratio is higher than this value, treat the decoding as failed
+    (default: 2.4)
+  --logprob_threshold LOGPROB_THRESHOLD
+    if the average log probability is lower than this value, treat the decoding as failed
+    (default: -1.0)
+  --no_speech_threshold NO_SPEECH_THRESHOLD
+    if the probability of the <|nospeech|> token is higher than this value AND
+    the decoding has failed due to `logprob_threshold`, consider the segment as silence
+    (default: 0.6)
+``` 
