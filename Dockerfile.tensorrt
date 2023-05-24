@@ -1,0 +1,70 @@
+FROM pinto0309/whisper-onnx-cuda:latest
+ENV DEBIAN_FRONTEND=noninteractive
+ARG USERNAME=user
+ARG OS=ubuntu2204
+ARG CUDAVER=11.8
+ARG CUDNNVER=8.9
+ARG TENSORRTVER=8.5.3
+ARG PYCUDAVER=2022.2
+
+COPY nv-tensorrt-local-repo-${OS}-${TENSORRTVER}-cuda-${CUDAVER}_1.0-1_amd64.deb .
+
+SHELL ["/bin/bash", "-c"]
+
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${PATH}:${CUDA_HOME}/bin
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CUDA_HOME}/lib64
+
+# Install TensorRT
+# https://developer.nvidia.com/downloads/compute/machine-learning/tensorrt/secure/8.5.3/local_repos/nv-tensorrt-local-repo-ubuntu2204-8.5.3-cuda-11.8_1.0-1_amd64.deb
+RUN sudo dpkg -i nv-tensorrt-local-repo-${OS}-${TENSORRTVER}-cuda-${CUDAVER}_1.0-1_amd64.deb \
+    && sudo cp /var/nv-tensorrt-local-repo-${OS}-${TENSORRTVER}-cuda-${CUDAVER}/*-keyring.gpg /usr/share/keyrings/ \
+    && sudo apt-get update \
+    && sudo apt-get install -y --no-install-recommends \
+        tensorrt=${TENSORRTVER}.1-1+cuda${CUDAVER} \
+        tensorrt-dev=${TENSORRTVER}.1-1+cuda${CUDAVER} \
+        tensorrt-libs=${TENSORRTVER}.1-1+cuda${CUDAVER} \
+        uff-converter-tf=${TENSORRTVER}-1+cuda${CUDAVER} \
+        python3-libnvinfer-dev=${TENSORRTVER}-1+cuda${CUDAVER} \
+        python3-libnvinfer=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvparsers-dev=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvparsers8=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvonnxparsers-dev=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvonnxparsers8=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvinfer-samples=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvinfer-plugin-dev=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvinfer-plugin8=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvinfer-dev=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvinfer-bin=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libnvinfer8=${TENSORRTVER}-1+cuda${CUDAVER} \
+        graphsurgeon-tf=${TENSORRTVER}-1+cuda${CUDAVER} \
+        onnx-graphsurgeon=${TENSORRTVER}-1+cuda${CUDAVER} \
+        libprotobuf-dev \
+        protobuf-compiler \
+        cmake \
+    && rm nv-tensorrt-local-repo-${OS}-${TENSORRTVER}-cuda-${CUDAVER}_1.0-1_amd64.deb \
+    && cd /usr/src/tensorrt/samples/trtexec \
+    && sudo make \
+    && sudo apt clean \
+    && sudo rm -rf /var/lib/apt/lists/*
+
+# Install onnx-tensorrt
+RUN git clone -b release/8.5-GA --recursive https://github.com/onnx/onnx-tensorrt /home/${USERNAME}/onnx-tensorrt \
+    && pushd /home/${USERNAME}/onnx-tensorrt \
+    && mkdir build \
+    && pushd build \
+    && cmake .. -DTENSORRT_ROOT=/usr/src/tensorrt \
+    && make -j$(nproc) \
+    && sudo make install \
+    && popd \
+    && popd \
+    && pip install pycuda==${PYCUDAVER} \
+    && echo "pushd /home/${USERNAME}/onnx-tensorrt > /dev/null" >> ~/.bashrc \
+    # At docker build time, setup.py fails because NVIDIA's physical GPU device cannot be detected.
+    # Therefore, a workaround is applied to configure setup.py to run on first access.
+    && echo 'python setup.py install --user 1>/dev/null 2>/dev/null' >> ~/.bashrc \
+    && echo 'popd > /dev/null' >> ~/.bashrc \
+    && echo 'export CUDA_MODULE_LOADING=LAZY' >> ~/.bashrc \
+    && echo 'export PATH=${PATH}:/usr/src/tensorrt/bin:${HOME}/onnx-tensorrt/build' >> ~/.bashrc
+
+RUN echo 'export PATH=${PATH}:${HOME}/.local/bin' >> ~/.bashrc
