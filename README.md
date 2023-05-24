@@ -6,9 +6,18 @@ This repository has been reimplemented with ONNX and TensorRT using [zhuzilin/wh
 Enables execution only with onnxruntime with CUDA and TensorRT Excecution Provider enabled, no need to install PyTorch or TensorFlow.
 
 ## 1. Environment
+Although it can run directly on the host PC, we strongly recommend the use of Docker to avoid breaking the environment.
+
 1. Docker
-2. NVIDIA GPU
-3. onnxruntime-gpu==1.13.1
+2. NVIDIA GPU (VRAM 16 GB or more recommended)
+3. onnx 1.13.1
+4. onnxruntime-gpu 1.13.1 (TensorRT Execution Provider custom)
+5. CUDA 11.8
+6. cuDNN 8.9
+7. TensorRT 8.5.3
+8. onnx-tensorrt 8.5-GA
+9. cupy v12.0.0
+10. etc (See Dockerfile.xxx)
 
 ## 2. Converted Models
 https://github.com/PINTO0309/PINTO_model_zoo/tree/main/381_Whisper
