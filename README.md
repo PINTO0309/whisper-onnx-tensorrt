@@ -14,6 +14,9 @@ Enables execution only with onnxruntime with CUDA and TensorRT Excecution Provid
 https://github.com/PINTO0309/PINTO_model_zoo/tree/main/381_Whisper
 
 ## 3. Docker run
+```bash
+git clone https://github.com/PINTO0309/whisper-onnx-tensorrt.git && cd whisper-onnx-tensorrt
+```
 ### 3-1. CUDA ver
 ```bash
 docker run --rm -it --gpus all -v `pwd`:/workdir pinto0309/whisper-onnx-cuda
