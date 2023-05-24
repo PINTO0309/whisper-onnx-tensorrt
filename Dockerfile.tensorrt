@@ -67,4 +67,7 @@ RUN git clone -b release/8.5-GA --recursive https://github.com/onnx/onnx-tensorr
     && echo 'export CUDA_MODULE_LOADING=LAZY' >> ~/.bashrc \
     && echo 'export PATH=${PATH}:/usr/src/tensorrt/bin:${HOME}/onnx-tensorrt/build' >> ~/.bashrc
 
-RUN echo 'export PATH=${PATH}:${HOME}/.local/bin' >> ~/.bashrc
+RUN echo 'export PATH=${PATH}:${HOME}/.local/bin' >> ~/.bashrc \
+    && echo "export USER=`whoami`" >> ~/.bashrc \
+    && echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc \
+    && echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc

@@ -10,6 +10,10 @@ ARG TENSORRTVER=8.5.3
 
 SHELL ["/bin/bash", "-c"]
 
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${PATH}:${CUDA_HOME}/bin
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CUDA_HOME}/lib64
+
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -21,6 +25,7 @@ RUN apt-get update \
         sudo \
         build-essential \
         ca-certificates \
+        pciutils \
     && apt-get install -y \
         software-properties-common \
     && apt-get install -y  --no-install-recommends \
@@ -67,3 +72,8 @@ RUN git clone --recursive -b v12.0.0 https://github.com/cupy/cupy.git \
 ARG WKDIR=/workdir
 WORKDIR ${WKDIR}
 RUN sudo chown ${USERNAME}:${USERNAME} ${WKDIR}
+
+RUN echo 'export PATH=${PATH}:${HOME}/.local/bin' >> ~/.bashrc \
+    && echo "export USER=`whoami`" >> ~/.bashrc \
+    && echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc \
+    && echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
