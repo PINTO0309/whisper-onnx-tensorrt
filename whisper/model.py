@@ -1,16 +1,13 @@
 import io
 import os
 from dataclasses import dataclass
-from typing import List, Dict, Tuple, TYPE_CHECKING
+from typing import List, Dict, Tuple
 import numpy as np
 import requests
 import onnx
 import onnxruntime as ort
-# from whisper.transcribe import transcribe as transcribe_function
 from whisper.decoding import detect_language as detect_language_function, decode as decode_function
 
-# if TYPE_CHECKING:
-#     from whisper.model import Whisper
 
 _MODELS = {
     "tiny.en": "https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/381_Whisper/pt/tiny.en.pt",

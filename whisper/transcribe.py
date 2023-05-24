@@ -1,7 +1,15 @@
-import argparse
 import os
+import sys
+sys.path.append(os.getcwd())
+import argparse
 import warnings
 from typing import List, Optional, Tuple, Union, TYPE_CHECKING
+
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=Warning)
+warnings.simplefilter(action='ignore', category=DeprecationWarning)
+warnings.simplefilter(action='ignore', category=RuntimeWarning)
 
 import numpy as np
 import tqdm
