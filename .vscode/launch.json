@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: 現在のファイル",
+            "name": "Transcribe",
             "type": "python",
             "request": "launch",
             "program": "${file}",
