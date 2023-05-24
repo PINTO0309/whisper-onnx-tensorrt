@@ -10,7 +10,7 @@
             "justMyCode": true,
             "args": [
                 "intel_x1.20.mp4",
-                "--model", "tiny",
+                "--model", "small",
                 "--beam_size", "3",
             ]
         }
