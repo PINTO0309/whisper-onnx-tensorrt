@@ -27,6 +27,7 @@ docker run --rm -it --gpus all -v `pwd`:/workdir pinto0309/whisper-onnx-tensorrt
 ```
 
 ## 4. Docker build
+If you do not need to build the docker image by yourself, you do not need to perform this step.
 ### 4-1. CUDA ver
 ```bash
 docker build -t whisper-onnx -f Dockerfile.gpu .
