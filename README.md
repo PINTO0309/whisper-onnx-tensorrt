@@ -65,6 +65,8 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
     large-v2
     ```
 - command
+
+    The onnx file is automatically downloaded when the sample is run.
     ```bash
     python whisper/transcribe.py xxxx.mp4 --model small --beam_size 3
     ```
