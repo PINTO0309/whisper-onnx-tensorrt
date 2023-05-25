@@ -26,9 +26,6 @@ RUN apt-get update \
         build-essential \
         ca-certificates \
         pciutils \
-    && apt-get install -y \
-        software-properties-common \
-    && apt-get install -y  --no-install-recommends \
         software-properties-common \
         python3-all-dev \
         python-is-python3 \
@@ -50,6 +47,7 @@ RUN apt-get update \
     && wget https://s3.us-central-1.wasabisys.com/tensorrt-installers/${OS}-tensorrt${TENSORRTVER}-cuda${CUDAVER}-cudnn${CUDNNVER}-onnxruntime${ONNXRUNTIMEVER}/onnxruntime_gpu-${ONNXRUNTIMEVER}-cp310-cp310-linux_x86_64.whl \
     && pip uninstall onnxruntime onnxruntime-gpu \
     && pip install onnxruntime_gpu-${ONNXRUNTIMEVER}-cp310-cp310-linux_x86_64.whl \
+    && rm onnxruntime_gpu-${ONNXRUNTIMEVER}-cp310-cp310-linux_x86_64.whl \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm /etc/apt/apt.conf.d/docker-clean
