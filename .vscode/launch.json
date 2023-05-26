@@ -11,6 +11,7 @@
             "args": [
                 "carmack.mp3",
                 "--model", "small",
+                "--disable_cupy",
                 "--beam_size", "5",
             ]
         }

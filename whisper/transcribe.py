@@ -78,7 +78,7 @@ def transcribe(
     A dictionary containing the resulting text ("text") and segment-level details ("segments"), and
     the spoken language ("language"), which is detected when `decode_options["language"]` is None.
     """
-    mel: np.ndarray = log_mel_spectrogram(audio)
+    mel: np.ndarray = log_mel_spectrogram(audio, decode_options.pop("disable_cupy"))
 
     if decode_options.get("language", None) is None:
         if verbose:
@@ -253,6 +253,7 @@ def cli():
     parser.add_argument("--model", default="small", choices=available_models(), help="name of the Whisper model to use")
     parser.add_argument("--output_dir", "-o", type=str, default=".", help="directory to save the outputs")
     parser.add_argument("--verbose", type=str2bool, default=True, help="whether to print out the progress and debug messages")
+    parser.add_argument("--disable_cupy", action='store_true', help='When Out of Memory occurs due to insufficient GPU RAM, this option suppresses GPU RAM consumption.')
 
     parser.add_argument("--task", type=str, default="transcribe", choices=["transcribe", "translate"], help="whether to perform X->X speech recognition ('transcribe') or X->English translation ('translate')")
     parser.add_argument("--language", type=str, default=None, choices=sorted(LANGUAGES.keys()) + sorted([k.title() for k in TO_LANGUAGE_CODE.keys()]), help="language spoken in the audio, specify None to perform language detection")

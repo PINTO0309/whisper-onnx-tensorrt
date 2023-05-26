@@ -78,7 +78,7 @@ def mel_filters(n_mels: int = N_MELS) -> np.ndarray:
     with np.load(os.path.join(os.path.dirname(__file__), "assets", "mel_filters.npz")) as f:
         return f[f"mel_{n_mels}"]
 
-def sliding_window_view(x, window_shape, step=1):
+def cupy_sliding_window_view(x, window_shape, step=1):
     shape = ((x.shape[-1] - window_shape) // step + 1,) + (window_shape,)
     strides = (step * x.strides[-1],) + x.strides
     return cp.lib.stride_tricks.as_strided(x, shape=shape, strides=strides)
@@ -91,7 +91,7 @@ def cupy_stft(audio: np.ndarray, N_FFT: int, HOP_LENGTH: int):
     if (cpaudio.size - N_FFT) % HOP_LENGTH > 0:
         num_frames += 1
     audio_padded = cp.pad(cpaudio, pad_width=(N_FFT//2, N_FFT//2), mode='constant')
-    frames = sliding_window_view(audio_padded, N_FFT, HOP_LENGTH)
+    frames = cupy_sliding_window_view(audio_padded, N_FFT, HOP_LENGTH)
     frames = frames[:num_frames]
     stft = cp.fft.rfft(frames * window, axis=-1)
 
@@ -100,7 +100,28 @@ def cupy_stft(audio: np.ndarray, N_FFT: int, HOP_LENGTH: int):
     return magnitudes
 
 
-def log_mel_spectrogram(audio: Union[str, np.ndarray], n_mels: int = N_MELS):
+def numpy_sliding_window_view(x, window_shape, step=1):
+    shape = ((x.shape[-1] - window_shape) // step + 1,) + (window_shape,)
+    strides = (step * x.strides[-1],) + x.strides
+    return np.lib.stride_tricks.as_strided(x, shape=shape, strides=strides)
+
+
+def numpy_stft(audio: np.ndarray, N_FFT: int, HOP_LENGTH: int):
+    window = np.hanning(N_FFT)
+    num_frames = 1 + (audio.size - N_FFT) // HOP_LENGTH
+    if (audio.size - N_FFT) % HOP_LENGTH > 0:
+        num_frames += 1
+    audio_padded = np.pad(audio, pad_width=(N_FFT//2, N_FFT//2), mode='constant')
+    frames = numpy_sliding_window_view(audio_padded, N_FFT, HOP_LENGTH)
+    frames = frames[:num_frames]
+    stft = np.fft.rfft(frames * window, axis=-1)
+
+    cpstft = (np.abs(stft[:,:N_FFT//2 + 1]) ** 2).T
+    magnitudes = cpstft.astype(audio.dtype)
+    return magnitudes
+
+
+def log_mel_spectrogram(audio: Union[str, np.ndarray], disable_cupy: bool, n_mels: int = N_MELS):
     """
     Compute the log-Mel spectrogram of
 
@@ -120,7 +141,10 @@ def log_mel_spectrogram(audio: Union[str, np.ndarray], n_mels: int = N_MELS):
     if isinstance(audio, str):
         audio = load_audio(audio)
 
-    magnitudes = cupy_stft(audio, N_FFT, HOP_LENGTH)
+    if not disable_cupy:
+        magnitudes = cupy_stft(audio, N_FFT, HOP_LENGTH)
+    else:
+        magnitudes = numpy_stft(audio, N_FFT, HOP_LENGTH)
 
     filters = mel_filters(n_mels)
     mel_spec = filters @ magnitudes

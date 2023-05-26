@@ -2,6 +2,9 @@
 *.mp3
 *.mp4
 *.npy
+*.srt
+*.txt
+*.vtt
 *.engine
 *.profile
 __pycache__

@@ -96,6 +96,7 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
         [--model {tiny.en,tiny,base.en,base,small.en,small,medium.en,medium,large-v1,large-v2}]
         [--output_dir OUTPUT_DIR]
         [--verbose VERBOSE]
+        [--disable_cupy]
         [--task {transcribe,translate}]
         [--language {af, am, ...}]
         [--temperature TEMPERATURE]
@@ -128,6 +129,9 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
       --verbose VERBOSE
         whether to print out the progress and debug messages
         (default: True)
+      --disable_cupy
+        When Out of Memory occurs due to insufficient GPU RAM, this option suppresses GPU
+        RAM consumption.
       --task {transcribe,translate}
         whether to perform X->X speech recognition ('transcribe') or
         X->English translation ('translate')
@@ -179,7 +183,7 @@ docker run --rm -it --gpus all -v `pwd`:/workdir whisper-onnx
         if the probability of the <|nospeech|> token is higher than this value AND
         the decoding has failed due to `logprob_threshold`, consider the segment as silence
         (default: 0.6)
-    ``` 
+    ```
 ## 6. Languages
 https://github.com/PINTO0309/whisper-onnx-tensorrt/blob/main/whisper/tokenizer.py
 ```
