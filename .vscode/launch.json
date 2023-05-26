@@ -9,9 +9,9 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "intel_x1.20.mp4",
+                "carmack.mp3",
                 "--model", "small",
-                "--beam_size", "3",
+                "--beam_size", "5",
             ]
         }
     ]
