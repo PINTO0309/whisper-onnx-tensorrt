@@ -10,9 +10,9 @@
             "justMyCode": true,
             "args": [
                 "carmack.mp3",
-                "--model", "small",
+                "--model", "tiny.en",
                 "--disable_cupy",
-                "--beam_size", "5",
+                "--beam_size", "2",
             ]
         }
     ]

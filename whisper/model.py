@@ -24,14 +24,28 @@ _MODELS = {
 }
 
 def model_download(name: str, onnx_file_save_path: str='.') -> onnx.ModelProto:
-    onnx_file_path = f'{onnx_file_save_path}/{name}_11_float16.onnx'
+    onnx_file = f'{name}_11_layer_fused_optimization_float16.onnx'
+    onnx_file_path = f'{onnx_file_save_path}/{onnx_file}'
     onnx_serialized_graph = None
     if not os.path.exists(onnx_file_path):
-        url = f'https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/381_Whisper/onnx/{name}_11_float16.onnx'
-        onnx_serialized_graph = requests.get(url).content
-        with io.BytesIO(onnx_serialized_graph) as f:
-            onnx_graph: onnx.ModelProto = onnx.load(f)
-            onnx.save(onnx_graph, f'{onnx_file_save_path}/{name}_11_float16.onnx')
+        try:
+            url = f'https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/381_Whisper/onnx/whisper-onnx-xxx/float16/layer_fused_optimization_float16/{onnx_file}'
+            onnx_serialized_graph = requests.get(url).content
+            with io.BytesIO(onnx_serialized_graph) as f:
+                onnx_graph: onnx.ModelProto = onnx.load(f)
+                onnx.save(onnx_graph, f'{onnx_file_path}')
+        except:
+            onnx_file = f'{name}_11_float16.onnx'
+            onnx_file_path = f'{onnx_file_save_path}/{onnx_file}'
+            if not os.path.exists(onnx_file_path):
+                url = f'https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/381_Whisper/onnx/whisper-onnx-xxx/float16/no_optimization/{onnx_file}'
+                onnx_serialized_graph = requests.get(url).content
+                with io.BytesIO(onnx_serialized_graph) as f:
+                    onnx_graph: onnx.ModelProto = onnx.load(f)
+                    onnx.save(onnx_graph, f'{onnx_file_path}')
+            else:
+                onnx_graph: onnx.ModelProto = onnx.load(onnx_file_path)
+                onnx_serialized_graph = onnx._serialize(onnx_graph)
     else:
         onnx_graph: onnx.ModelProto = onnx.load(onnx_file_path)
         onnx_serialized_graph = onnx._serialize(onnx_graph)
@@ -109,13 +123,13 @@ class OnnxAudioEncoder():
             ort.InferenceSession(
                 path_or_bytes=model_download(name=f'{model}_encoder'),
                 providers=[
-                    (
-                        'TensorrtExecutionProvider', {
-                            'trt_engine_cache_enable': True,
-                            'trt_engine_cache_path': '.',
-                            'trt_fp16_enable': True,
-                        }
-                    ),
+                    # (
+                    #     'TensorrtExecutionProvider', {
+                    #         'trt_engine_cache_enable': True,
+                    #         'trt_engine_cache_path': '.',
+                    #         'trt_fp16_enable': True,
+                    #     }
+                    # ),
                     'CUDAExecutionProvider'
                 ],
             )
