@@ -2,7 +2,7 @@
 
 start_time=`date +%s`
 
-python whisper/transcribe.py ocean.mp3 --model small --beam_size 5
+python whisper/transcribe.py carmack.mp3 --model tiny.en --beam_size 2
 
 end_time=`date +%s`
 
